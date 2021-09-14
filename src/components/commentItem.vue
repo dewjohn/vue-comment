@@ -14,9 +14,7 @@
   <p class="text-gray-600 py-4">{{content}}</p>
 </template>
 
-<script>
-export default {
-  name: 'commentItem',
-  props: ['user', 'time', 'content', 'avatar']
-}
+<script setup>
+import { defineProps } from 'vue'
+defineProps(['user', 'time', 'content', 'avatar'])
 </script>
