@@ -6,30 +6,33 @@ const instancle = axios.create({
   withCredentials: true
 })
 
-export const get = (url, params = {}) => {
-  return new Promise((resolve, reject) => {
-    instancle.get(url, { params })
-      .then(response => {
-        resolve(response)
+const http = {
+  get: (url, params = {}) => {
+    return new Promise((resolve, reject) => {
+      instancle.get(url, { params })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(err => {
+          reject(err)
+        })
+    })
+  },
+  post: (url, data = {}) => {
+    return new Promise((resolve, reject) => {
+      instancle.post(url, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
-      .catch(err => {
-        reject(err)
-      })
-  })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(err => {
+          reject(err)
+        })
+    })
+  }
 }
 
-export const post = (url, data = {}) => {
-  return new Promise((resolve, reject) => {
-    instancle.post(url, data, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        resolve(response)
-      })
-      .catch(err => {
-        reject(err)
-      })
-  })
-}
+export default http

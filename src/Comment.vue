@@ -5,92 +5,64 @@
         <h2 class="text-3xl my-6">评论</h2>
         <commentBox @submit="addNewComment($event)"/>
         <commentDivider />
-        <div v-for="comment in comments" :key="comment.id">
-          <!-- 单个留言 -->
-          <commentItem
-          :user="comment.user"
-          :avatar="comment.avatar"
-          :time="comment.time"
-          :content="comment.content"/>
-          <!-- 回复 -->
-          <replyContainer v-if="comment.replies">
+          <div
+          v-for="comment in comments"
+          :key="comment._id">
+            <!-- 单个留言 -->
             <commentItem
-            v-for="reply in comment.replies"
-            :key="reply.id"
-            :user="reply.user"
-            :avatar="reply.avatar"
-            :time="reply.time"
-            :content="reply.content"/>
-          </replyContainer>
-          <reply-box @inSubmit="addReply($event, comment.id)"/>
-        </div>
+            :user="comment.username"
+            :avatar="comment.avatar"
+            :time="comment.createdAt"
+            :content="comment.content"/>
+            <!-- 回复 -->
+            <replyContainer v-if="comment.replies">
+              <commentItem
+              v-for="reply in comment.replies"
+              :key="reply._id"
+              :user="reply.replyUserName"
+              :avatar="reply.replyAvatar"
+              :time="comment.createdAt"
+              :content="reply.replyContent"/>
+            </replyContainer>
+            <reply-box @inSubmit="addReply($event, comment._id)"/>
+          </div>
       </div>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watchEffect } from 'vue'
+import { getCommentList, makeAComment, makeAReply } from './api/api'
 import commentBox from './components/commentBox.vue'
 import commentDivider from './components/commentDivider.vue'
 import commentItem from './components/commentItem.vue'
 import replyBox from './components/replyBox.vue'
 import replyContainer from './components/repyContainer.vue'
-import face1 from './assets/images/face1.jpeg'
-import face2 from './assets/images/face2.png'
-import face3 from './assets/images/face3.jpg'
-import face4 from './assets/images/face4.jpeg'
+const comments = ref('')
+onMounted(() => {
+  getCommentListEffect()
+})
 
-const comments = ref([
-  {
-    id: 1,
-    user: '梦落轻寻',
-    avatar: face1,
-    time: '2 小时之前',
-    content: '新买的小皮筋不是我不想要，而是我认为只要有一个就好，虽然现在的它也有一些旧了，看起来没有那么新，但是它代替你陪着我是最长时间的呀。',
-    replies: [
-      {
-        id: 2,
-        user: '彼岸花开',
-        avatar: face2,
-        time: '1 小时之前',
-        content: '赞！！！'
-      },
-      {
-        id: 3,
-        user: '行云流水',
-        avatar: face3,
-        time: '1 小时之前',
-        content: '一直都是最开始就分好技术栈的才开始动手的，静态页面就用jq ，从来没有试过从静态转vue'
-      }
-    ]
-  }
-])
-const testId = ref(4)
-const constructNewComment = (content) => {
-  return {
-    id: testId.value++,
-    user: '当前用户',
-    avatar: face4,
-    time: '1 秒前',
-    content
-  }
+const getCommentListEffect = async () => {
+  await getCommentList().then(res => {
+    comments.value = res.data
+    console.log(comments.value)
+  })
 }
-const addNewComment = (content) => {
-  const newComment = constructNewComment(content)
-  comments.value.push(newComment)
-  console.log(newComment)
+const addReply = async (repContent, id) => {
+  const { username, content } = repContent
+  const data = { username, content, id }
+  console.log(data)
+  await makeAReply(data).then(res => {
+    console.log(res)
+  })
 }
-
-const addReply = (repContent, id) => {
-  // console.log(id)
-  const reply = constructNewComment(repContent)
-  const comment = comments.value.find(ele => ele.id === id)
-  if (comment.replies) {
-    comment.replies.push(reply)
-  } else {
-    comment.replies = [reply]
-  }
-  // console.log('++++++++++++', comment)
+const addNewComment = async (contents) => {
+  await makeAComment(contents).then(res => {
+  })
+  watchEffect(() => {
+    getCommentListEffect()
+  })
 }
 </script>
