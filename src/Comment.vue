@@ -56,16 +56,19 @@ const getCommentListEffect = async () => {
 const addReply = async (repContent, id) => {
   const { username, content } = repContent
   const data = { username, content, id }
-  await makeAReply(data).then(res => {
-    console.log(res)
-  })
+  const res = await makeAReply(data)
+  if (res?.errno === 0) {
+    watchEffect(() => {
+      getCommentListEffect()
+    })
+  }
 }
 const addNewComment = async (contents) => {
-  await makeAComment(contents).then(res => {
-    console.log(res)
-  })
-  watchEffect(() => {
-    getCommentListEffect()
-  })
+  const res = await makeAComment(contents)
+  if (res?.errno === 0) {
+    watchEffect(() => {
+      getCommentListEffect()
+    })
+  }
 }
 </script>
