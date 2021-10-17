@@ -34,6 +34,7 @@
 <script setup>
 import { ref, onMounted, watchEffect } from 'vue'
 import { getCommentList, makeAComment, makeAReply } from './api/api'
+import timestamps from './effect/timestamps'
 import commentBox from './components/commentBox.vue'
 import commentDivider from './components/commentDivider.vue'
 import commentItem from './components/commentItem.vue'
@@ -46,20 +47,22 @@ onMounted(() => {
 
 const getCommentListEffect = async () => {
   await getCommentList().then(res => {
-    comments.value = res.data
-    console.log(comments.value)
+    comments.value = res.data;
+    (comments.value).forEach(item => {
+      item.createdAt = timestamps(item.createdAt)
+    })
   })
 }
 const addReply = async (repContent, id) => {
   const { username, content } = repContent
   const data = { username, content, id }
-  console.log(data)
   await makeAReply(data).then(res => {
     console.log(res)
   })
 }
 const addNewComment = async (contents) => {
   await makeAComment(contents).then(res => {
+    console.log(res)
   })
   watchEffect(() => {
     getCommentListEffect()
