@@ -8,11 +8,17 @@
       class="bg-gray-50 p-2 rounded"
     ></textarea>
     <fieldset class="py-4 flex justify-between">
-      <input
-      v-model="contents.username"
-      type="text"
-      placeholder="请输入用户名"
-      class="bg-gray-50 p-2 rounded w-48"/>
+      <div class="info flex ">
+          <div class="relative flex flex-col bg-gray-50 rounded-full h-12 w-12 items-center mr-8">
+            <input type="file" class="cursor-pointer opacity-0"/>
+            <div class="text-xs w-10 text-black text-opacity-50">点击头像上传</div>
+          </div>
+          <input
+          v-model="contents.username"
+          type="text"
+          placeholder="请输入用户名"
+          class="bg-gray-50 p-2 rounded w-48"/>
+      </div>
       <div>
         <input
           type="submit"
